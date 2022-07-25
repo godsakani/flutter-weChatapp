@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../utils/constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../widgets/message_widget.dart';
+import '../widgets/streammessage_widget.dart';
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
 
@@ -14,6 +17,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final messageTextController = TextEditingController();
   final _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? messageText;
@@ -77,7 +81,8 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
+          children: [
+            MessageStream(firestore: _firestore),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -85,6 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
+                      controller: messageTextController,
                       onChanged: (value) {
                         messageText = value;
                       },
@@ -97,6 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 TextButton(
                   onPressed: () {
+                    messageTextController.clear();
                     _firestore.collection("messages").add({
                       'text': messageText,
                       'sender': loginUser,
