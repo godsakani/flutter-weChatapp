@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wechat/Screens/chat_screen.dart';
 
 import 'message_widget.dart';
 
@@ -24,15 +25,18 @@ class MessageStream extends StatelessWidget {
             for (var message in messages) {
               final messageSender = message['sender'];
               final messageText = message['text'];
+              final currentUser = loginUser;
               final messageBubble = MessageBubble(
                 sender: messageSender,
                 text: messageText,
+                isMe: currentUser == messageSender,
               );
 
               messageBubbles.add(messageBubble);
             }
             return Expanded(
               child: ListView(
+                reverse: true,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 15,
