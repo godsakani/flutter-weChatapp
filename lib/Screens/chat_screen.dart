@@ -7,6 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/message_widget.dart';
 import '../widgets/streammessage_widget.dart';
 
+final _firestore = FirebaseFirestore.instance;
+String? loginUser;
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
 
@@ -18,10 +21,9 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
-  final _firestore = FirebaseFirestore.instance;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? messageText;
-  String? loginUser;
 
   @override
   void initState() {
@@ -32,30 +34,13 @@ class _ChatScreenState extends State<ChatScreen> {
   void getCurrentUser() async {
     try {
       final user = await _auth.currentUser;
-      final uid = user?.uid;
       final email = user?.email;
       if (user != null) {
-        print(uid);
         loginUser = email.toString();
       }
     } catch (e) {
       print(e);
     }
-  }
-
-  // void getMessages() async {
-  //   final messages = await _firestore.collection("messages").get();
-  //   for (var message in messages.docs) {
-  //     print(message.data());
-  //   }
-  // }
-  void messagesStream() async {
-    await for (var snapshot in _firestore.collection("messages").snapshots()) {
-      for (var message in snapshot.docs) {
-        print(message.data());
-      }
-    }
-    ;
   }
 
   @override
@@ -66,9 +51,8 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              // _auth.signOut();
-              // Navigator.pop(context);
-              messagesStream();
+              _auth.signOut();
+              Navigator.pop(context);
             },
             icon: Icon(Icons.close),
           )
